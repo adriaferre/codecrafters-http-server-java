@@ -28,6 +28,13 @@ public class Main {
 
           if ("/".equals(path)) {
               successfulResponse(outputStream);
+          } else if (path.contains("/echo/")) {
+              final String response = path.split("/echo/")[1];
+              outputStream.write("HTTP/1.1 200 OK\r\n".getBytes());
+              outputStream.write("Content-Type: text/plain\r\n".getBytes());
+              outputStream.write(("Content-Length: " + response.length() + "\r\n").getBytes());
+              outputStream.write("\r\n".getBytes());
+              outputStream.write(response.getBytes());
           } else {
               notFoundResponse(outputStream);
           }
