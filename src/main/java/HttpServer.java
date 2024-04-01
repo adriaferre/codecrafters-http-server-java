@@ -6,13 +6,17 @@ import response.ResponseCode;
 import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 public class HttpServer {
 
     private final int port;
+    private final ExecutorService executorService;
 
-    public HttpServer(final int port) {
+    public HttpServer(final int port, final int concurrencyLevel) {
         this.port = port;
+        this.executorService = Executors.newFixedThreadPool(concurrencyLevel);
     }
 
     public void run() {
@@ -23,7 +27,7 @@ public class HttpServer {
             // Not shutdown enabled
             while (true) {
                 Socket clientSocket = serverSocket.accept();
-                handleRequest(clientSocket);
+                executorService.submit(() -> handleRequest(clientSocket));
 
             }
         } catch (Exception e) {
