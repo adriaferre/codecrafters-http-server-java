@@ -2,22 +2,31 @@ package request;
 
 import java.io.BufferedReader;
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
 public class HttpRequest {
 
     private final Method method;
     private final String path;
+    private final Map<String, String> headers;
 
     private HttpRequest(
             final Method method,
-            final String path
+            final String path,
+            final Map<String, String> headers
     ) {
         this.method = method;
         this.path = path;
+        this.headers = headers;
     }
 
     public String getPath() {
         return path;
+    }
+
+    public Map<String, String> headers() {
+        return headers;
     }
 
     public static HttpRequest from(final BufferedReader bufferedReader) throws IOException {
@@ -28,6 +37,13 @@ public class HttpRequest {
             default -> throw new IllegalArgumentException("Method not allowed");
         };
 
-        return new HttpRequest(method, parts[1]);
+        String line;
+        Map<String, String> headers = new HashMap<>();
+        while ((line = bufferedReader.readLine()) != null && !line.isEmpty()) {
+            String[] entry = line.split(" ");
+            headers.put(entry[0].replaceAll(":", ""), entry[1]);
+        }
+
+        return new HttpRequest(method, parts[1], headers);
     }
 }

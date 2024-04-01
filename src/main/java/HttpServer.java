@@ -42,6 +42,12 @@ public class HttpServer {
                 response = new HttpResponse.Builder()
                         .withResponseCode(ResponseCode.OK)
                         .build();
+            } else if (request.getPath().equals("/user-agent")) {
+                response = new HttpResponse.Builder()
+                        .withResponseCode(ResponseCode.OK)
+                        .withContentType(ContentType.TEXT_PLAIN)
+                        .body(request.headers().get("User-Agent"))
+                        .build();
             } else if (request.getPath().contains("/echo/")) {
                 final String param = request.getPath().split("/echo/")[1];
 
